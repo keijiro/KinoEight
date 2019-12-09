@@ -1,0 +1,13 @@
+{
+    "author": "Keijiro Takahashi",
+    "dependencies": { "com.unity.render-pipelines.high-definition": "7.1.6" },
+    "description": "8-bit style post processing effect for HDRP",
+    "displayName": "KinoEight",
+    "keywords": [ "unity" ],
+    "license": "Unlicense",
+    "name": "jp.keijiro.kino.post-processing.eight",
+    "repository": "github:keijiro/KinoEight",
+    "unity": "2019.3",
+    "unityRelease": "0f1",
+    "version": "0.1.0"
+}

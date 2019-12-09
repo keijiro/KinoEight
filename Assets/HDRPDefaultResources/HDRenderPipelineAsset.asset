@@ -346,5 +346,5 @@ MonoBehaviour:
   beforeTransparentCustomPostProcesses: []
   beforePostProcessCustomPostProcesses: []
   afterPostProcessCustomPostProcesses:
-  - Kino.PostProcessing.FourColor, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-    PublicKeyToken=null
+  - Kino.PostProcessing.Eight.FourColor, Kino.PostProcessing.Eight, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null

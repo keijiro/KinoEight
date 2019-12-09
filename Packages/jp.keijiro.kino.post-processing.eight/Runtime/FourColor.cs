@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
 
-namespace Kino.PostProcessing
+namespace Kino.PostProcessing.Eight
 {
     [System.Serializable, VolumeComponentMenu("Post-processing/Kino/Four Color")]
     public sealed class FourColor : CustomPostProcessVolumeComponent, IPostProcessComponent
