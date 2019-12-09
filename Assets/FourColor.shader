@@ -29,13 +29,13 @@ Shader "Hidden/Kino/PostProcess/FourColor"
         return output;
     }
 
+    static const uint bayer2x2[] = {0, 170, 255, 85};
+
     float3 _Color1, _Color2, _Color3, _Color4;
     float _Dithering;
     float _Opacity;
 
     TEXTURE2D_X(_InputTexture);
-
-    static const uint bayer2x2[] = {0, 170, 255, 85};
 
     float4 Fragment(Varyings input) : SV_Target
     {
@@ -43,9 +43,10 @@ Shader "Hidden/Kino/PostProcess/FourColor"
 
         uint2 positionSS = input.texcoord * _ScreenSize.xy;
         float4 c = LOAD_TEXTURE2D_X(_InputTexture, positionSS);
+        c.rgb = LinearToSRGB(c.rgb);
 
         uint dither = bayer2x2[(positionSS.y & 1) * 2 + (positionSS.x & 1)];
-        c += dither * _Dithering / 255;
+        c += (dither / 255.0 - 0.5) * _Dithering;
 
         float4 rgb_d = float4(_Color1, distance(c.rgb, _Color1));
 
@@ -58,7 +59,7 @@ Shader "Hidden/Kino/PostProcess/FourColor"
         float4 rgb_d4 = float4(_Color4, distance(c.rgb, _Color4));
         rgb_d = lerp(rgb_d, rgb_d4, rgb_d.a > rgb_d4.a);
 
-        return float4(rgb_d.rgb, c.a);
+        return float4(SRGBToLinear(rgb_d.rgb), c.a);
     }
 
     ENDHLSL
