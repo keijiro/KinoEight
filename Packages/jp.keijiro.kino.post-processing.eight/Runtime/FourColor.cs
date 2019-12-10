@@ -11,7 +11,7 @@ namespace Kino.PostProcessing.Eight
         public ColorParameter color2 = new ColorParameter(new Color(1, 0, 0, 0), false, true, true);
         public ColorParameter color3 = new ColorParameter(new Color(0, 1, 0, 0), false, true, true);
         public ColorParameter color4 = new ColorParameter(new Color(1, 1, 1, 0), false, true, true);
-        public ClampedFloatParameter dithering = new ClampedFloatParameter(0.05f, 0, 1);
+        public ClampedFloatParameter dithering = new ClampedFloatParameter(0.05f, 0, 0.5f);
         public ClampedFloatParameter opacity = new ClampedFloatParameter(0, 0, 1);
 
         Material _material;
