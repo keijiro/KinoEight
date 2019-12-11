@@ -1,0 +1,82 @@
+#pragma kernel Main
+
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
+
+TEXTURE2D_X(_InputTexture);
+RW_TEXTURE2D_X(float4, _OutputTexture);
+
+float3 _Color1a, _Color1b, _Color1c, _Color1d;
+float3 _Color2a, _Color2b, _Color2c, _Color2d;
+float _Dithering, _Opacity;
+
+float4 ApplyPalette(float3 rgb, float3 c1, float3 c2, float3 c3, float3 c4)
+{
+    float4 rgb_d, temp;
+
+    // Color 1
+    rgb_d = float4(c1, distance(c1, rgb));
+
+    // Color 2
+    temp = float4(c2, distance(c2, rgb));
+    rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
+
+    // Color 3
+    temp = float4(c3, distance(c3, rgb));
+    rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
+
+    // Color 4
+    temp = float4(c4, distance(c4, rgb));
+    rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
+
+    return rgb_d;
+}
+
+static const float bayer2x2[] = {-0.5, 0.16666666, 0.5, -0.16666666};
+
+groupshared float dmtx1[8][8];
+groupshared float dmtx2[8][8];
+
+groupshared bool use1;
+
+[numthreads(8, 8, 1)]
+void Main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 tid : SV_GroupThreadID)
+{
+    float4 c = LOAD_TEXTURE2D_X(_InputTexture, dispatchThreadId.xy);
+
+    c.rgb = LinearToSRGB(c.rgb);
+
+    float dither = bayer2x2[(tid.y & 1) * 2 + (tid.x & 1)];
+    c.rgb += dither * _Dithering;
+
+    float4 rgb_d1 = ApplyPalette(c.rgb, _Color1a, _Color1b, _Color1c, _Color1d);
+    float4 rgb_d2 = ApplyPalette(c.rgb, _Color2a, _Color2b, _Color2c, _Color2d);
+
+    dmtx1[tid.x][tid.y] = rgb_d1.a;
+    dmtx2[tid.x][tid.y] = rgb_d2.a;
+
+    GroupMemoryBarrierWithGroupSync(); 
+
+    if (tid.x == 0 && tid.y == 0)
+    {
+        float a1 = 0;
+        float a2 = 0;
+
+        for (uint y = 0; y < 8; y++)
+            for (uint x = 0; x < 8; x++)
+            {
+                a1 += dmtx1[x][y];
+                a2 += dmtx2[x][y];
+            }
+
+        use1 = a1 < a2;
+    }
+
+    GroupMemoryBarrierWithGroupSync(); 
+
+    c.rgb = lerp(c.rgb, use1 ? rgb_d1.rgb : rgb_d2.rgb, _Opacity);
+
+    _OutputTexture[COORD_TEXTURE2D_X(dispatchThreadId.xy)]
+        = float4(SRGBToLinear(c.rgb), c.a);
+}

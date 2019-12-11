@@ -350,3 +350,5 @@ MonoBehaviour:
     Culture=neutral, PublicKeyToken=null
   - Kino.PostProcessing.Eight.EightColor, Kino.PostProcessing.Eight, Version=0.0.0.0,
     Culture=neutral, PublicKeyToken=null
+  - Kino.PostProcessing.Eight.TiledPalette, Kino.PostProcessing.Eight, Version=0.0.0.0,
+    Culture=neutral, PublicKeyToken=null

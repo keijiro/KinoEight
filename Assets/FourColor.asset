@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 581817bd740893c4e8673baeefa763d3, type: 3}
   m_Name: EightColor
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   color1:
     m_OverrideState: 0
@@ -244,6 +244,78 @@ MonoBehaviour:
     m_Value: 1
     min: 0
     max: 1
+--- !u!114 &-1356040493075393393
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ead65241dfd60114985bc8769df5465f, type: 3}
+  m_Name: TiledPalette
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  color1a:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 1, b: 1, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color1b:
+    m_OverrideState: 1
+    m_Value: {r: 0.007843138, g: 0.007843138, b: 0.007843138, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color1c:
+    m_OverrideState: 1
+    m_Value: {r: 0, g: 0.43137258, b: 0.5176471, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color1d:
+    m_OverrideState: 1
+    m_Value: {r: 0, g: 0.20392159, b: 0.1254902, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color2a:
+    m_OverrideState: 1
+    m_Value: {r: 0, g: 0.34509805, b: 0.8705883, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color2b:
+    m_OverrideState: 1
+    m_Value: {r: 0.75294125, g: 0.023529414, b: 0.36078432, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color2c:
+    m_OverrideState: 1
+    m_Value: {r: 0.9725491, g: 0.5137255, b: 0.427451, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color2d:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 1, b: 1, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  dithering:
+    m_OverrideState: 1
+    m_Value: 0.065
+    min: 0
+    max: 0.5
+  opacity:
+    m_OverrideState: 1
+    m_Value: 1
+    min: 0
+    max: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +334,7 @@ MonoBehaviour:
   - {fileID: -8855271004558628711}
   - {fileID: -9167943672156509972}
   - {fileID: -3553571570639855530}
+  - {fileID: -1356040493075393393}
 --- !u!114 &4137439887452006000
 MonoBehaviour:
   m_ObjectHideFlags: 3
