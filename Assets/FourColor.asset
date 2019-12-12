@@ -72,6 +72,78 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 1
     min: 0.001
+--- !u!114 &-9004976897033980808
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 581817bd740893c4e8673baeefa763d3, type: 3}
+  m_Name: EightColor
+  m_EditorClassIdentifier: 
+  active: 0
+  m_AdvancedMode: 0
+  color1:
+    m_OverrideState: 1
+    m_Value: {r: 0.16862746, g: 0.058823533, b: 0.32941177, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color2:
+    m_OverrideState: 1
+    m_Value: {r: 0.67058825, g: 0.121568635, b: 0.39607847, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color3:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 0.30980393, b: 0.41176474, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color4:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 0.9686275, b: 0.9725491, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color5:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 0.5058824, b: 0.25882354, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color6:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 0.854902, b: 0.27058825, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color7:
+    m_OverrideState: 1
+    m_Value: {r: 0.20000002, g: 0.40784317, b: 0.86274517, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  color8:
+    m_OverrideState: 1
+    m_Value: {r: 0.28627452, g: 0.9058824, b: 0.92549026, a: 0}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
+  dithering:
+    m_OverrideState: 1
+    m_Value: 0.199
+    min: 0
+    max: 0.5
+  opacity:
+    m_OverrideState: 1
+    m_Value: 1
+    min: 0
+    max: 1
 --- !u!114 &-8855271004558628711
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -124,126 +196,6 @@ MonoBehaviour:
   m_HighQualityFiltering:
     m_OverrideState: 0
     m_Value: 1
---- !u!114 &-5591594861084822171
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6f0bd89b19dec93bada82294d5bb6e3, type: 3}
-  m_Name: FourColor
-  m_EditorClassIdentifier: 
-  active: 0
-  m_AdvancedMode: 0
-  color1:
-    m_OverrideState: 1
-    m_Value: {r: 0.30980393, g: 0.26666668, b: 0.6117647, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color2:
-    m_OverrideState: 1
-    m_Value: {r: 0.5411765, g: 0.49803925, b: 0.80392164, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color3:
-    m_OverrideState: 1
-    m_Value: {r: 0.7960785, g: 0.83921576, b: 0.5372549, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color4:
-    m_OverrideState: 1
-    m_Value: {r: 0.36078432, g: 0.6784314, b: 0.37254903, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  dithering:
-    m_OverrideState: 1
-    m_Value: 0.1
-    min: 0
-    max: 1
-  opacity:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0
-    max: 1
---- !u!114 &-3553571570639855530
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 581817bd740893c4e8673baeefa763d3, type: 3}
-  m_Name: EightColor
-  m_EditorClassIdentifier: 
-  active: 0
-  m_AdvancedMode: 0
-  color1:
-    m_OverrideState: 0
-    m_Value: {r: 0, g: 0, b: 0, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color2:
-    m_OverrideState: 1
-    m_Value: {r: 0.75294125, g: 0.023529414, b: 0.36078432, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color3:
-    m_OverrideState: 1
-    m_Value: {r: 0, g: 0.20000002, b: 0.1254902, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color4:
-    m_OverrideState: 1
-    m_Value: {r: 0, g: 0.43137258, b: 0.5176471, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color5:
-    m_OverrideState: 1
-    m_Value: {r: 0.20392159, g: 0.7607844, b: 0.74509805, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color6:
-    m_OverrideState: 1
-    m_Value: {r: 0, g: 0.34509805, b: 0.8705883, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color7:
-    m_OverrideState: 1
-    m_Value: {r: 1, g: 0.81568635, b: 0.7058824, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  color8:
-    m_OverrideState: 1
-    m_Value: {r: 0.37647063, g: 0.37647063, b: 0.37647063, a: 0}
-    hdr: 0
-    showAlpha: 1
-    showEyeDropper: 1
-  dithering:
-    m_OverrideState: 1
-    m_Value: 0.05
-    min: 0
-    max: 0.5
-  opacity:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0
-    max: 1
 --- !u!114 &-1356040493075393393
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -258,57 +210,57 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   m_AdvancedMode: 0
-  color1a:
+  color1:
     m_OverrideState: 1
-    m_Value: {r: 0.031250477, g: 0.031250477, b: 0.031250477, a: 0}
+    m_Value: {r: 0.03137255, g: 0.09411766, b: 0.19215688, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
-  color1b:
+  color2:
     m_OverrideState: 1
-    m_Value: {r: 0.2589151, g: 0.78065157, b: 0, a: 0}
+    m_Value: {r: 0.48235297, g: 0.16078432, b: 0, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
-  color1c:
+  color3:
     m_OverrideState: 1
-    m_Value: {r: 0.7098192, g: 0.2427863, b: 1, a: 0}
+    m_Value: {r: 1, g: 0.5176471, b: 0.38823533, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
-  color1d:
+  color4:
     m_OverrideState: 1
-    m_Value: {r: 1, g: 1, b: 1, a: 0}
+    m_Value: {r: 1, g: 0.8705883, b: 0.6784314, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
-  color2a:
+  color5:
     m_OverrideState: 1
-    m_Value: {r: 0, g: 0, b: 0, a: 0}
+    m_Value: {r: 0, g: 0.25882354, b: 0.3529412, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
-  color2b:
+  color6:
     m_OverrideState: 1
-    m_Value: {r: 0.9062028, g: 0.38054475, b: 0.09378195, a: 0}
+    m_Value: {r: 0, g: 0.54901963, b: 0.54901963, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
-  color2c:
+  color7:
     m_OverrideState: 1
-    m_Value: {r: 0.06251621, g: 0.6668193, b: 0.9062028, a: 0}
+    m_Value: {r: 0, g: 0.64705884, b: 1, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
-  color2d:
+  color8:
     m_OverrideState: 1
-    m_Value: {r: 1, g: 1, b: 1, a: 0}
+    m_Value: {r: 0.9607844, g: 0.9568628, b: 0.9333334, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
   dithering:
     m_OverrideState: 1
-    m_Value: 0.204
+    m_Value: 0.1
     min: 0
     max: 0.5
   opacity:
@@ -329,11 +281,10 @@ MonoBehaviour:
   m_Name: FourColor
   m_EditorClassIdentifier: 
   components:
-  - {fileID: -5591594861084822171}
   - {fileID: 4137439887452006000}
   - {fileID: -8855271004558628711}
   - {fileID: -9167943672156509972}
-  - {fileID: -3553571570639855530}
+  - {fileID: -9004976897033980808}
   - {fileID: -1356040493075393393}
 --- !u!114 &4137439887452006000
 MonoBehaviour:

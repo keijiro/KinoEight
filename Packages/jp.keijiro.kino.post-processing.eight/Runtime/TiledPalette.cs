@@ -1,3 +1,7 @@
+//
+// KinoEight/TiledPalette - Color reduction effect with 8x8 tiled palettes
+//
+
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
@@ -7,18 +11,24 @@ namespace Kino.PostProcessing.Eight
     [System.Serializable, VolumeComponentMenu("Post-processing/Kino/Tiled Palette")]
     public sealed class TiledPalette : CustomPostProcessVolumeComponent, IPostProcessComponent
     {
-        public ColorParameter color1a = new ColorParameter(new Color(0, 0, 0, 0), false, true, true);
-        public ColorParameter color1b = new ColorParameter(new Color(1, 0, 0, 0), false, true, true);
-        public ColorParameter color1c = new ColorParameter(new Color(0, 1, 0, 0), false, true, true);
-        public ColorParameter color1d = new ColorParameter(new Color(1, 1, 0, 0), false, true, true);
+        #region Exposed parameters
 
-        public ColorParameter color2a = new ColorParameter(new Color(0, 0, 1, 0), false, true, true);
-        public ColorParameter color2b = new ColorParameter(new Color(1, 0, 1, 0), false, true, true);
-        public ColorParameter color2c = new ColorParameter(new Color(0, 1, 1, 0), false, true, true);
-        public ColorParameter color2d = new ColorParameter(new Color(1, 1, 1, 0), false, true, true);
+        public ColorParameter color1 = new ColorParameter(new Color(0, 0, 0, 0), false, true, true);
+        public ColorParameter color2 = new ColorParameter(new Color(1, 0, 0, 0), false, true, true);
+        public ColorParameter color3 = new ColorParameter(new Color(0, 1, 0, 0), false, true, true);
+        public ColorParameter color4 = new ColorParameter(new Color(1, 1, 0, 0), false, true, true);
+
+        public ColorParameter color5 = new ColorParameter(new Color(0, 0, 1, 0), false, true, true);
+        public ColorParameter color6 = new ColorParameter(new Color(1, 0, 1, 0), false, true, true);
+        public ColorParameter color7 = new ColorParameter(new Color(0, 1, 1, 0), false, true, true);
+        public ColorParameter color8 = new ColorParameter(new Color(1, 1, 1, 0), false, true, true);
 
         public ClampedFloatParameter dithering = new ClampedFloatParameter(0.05f, 0, 0.5f);
         public ClampedFloatParameter opacity = new ClampedFloatParameter(0, 0, 1);
+
+        #endregion
+
+        #region Static class variables
 
         static class IDs
         {
@@ -29,27 +39,30 @@ namespace Kino.PostProcessing.Eight
             internal static readonly int Palette = Shader.PropertyToID("_Palette");
         }
 
+        static ComputeShader _compute;
+        static Vector4 [] _palette = new Vector4 [8];
+
+        #endregion
+
+        #region Postprocess effect implementation
+
         public bool IsActive() => opacity.value > 0;
 
         public override CustomPostProcessInjectionPoint injectionPoint =>
             CustomPostProcessInjectionPoint.AfterPostProcess;
 
-        static ComputeShader _compute;
-        static Vector4 [] _palette = new Vector4 [8];
-
         public override void Setup()
         {
-            if (_compute == null)
-                _compute = Resources.Load<ComputeShader>("TiledPalette");
+            if (_compute == null) _compute = Resources.Load<ComputeShader>("KinoEightTiledPalette");
         }
 
         public override void Render(CommandBuffer cmd, HDCamera camera, RTHandle srcRT, RTHandle destRT)
         {
-            _palette[0] = color1a.value; _palette[1] = color1b.value;
-            _palette[2] = color1c.value; _palette[3] = color1d.value;
+            _palette[0] = color1.value; _palette[1] = color2.value;
+            _palette[2] = color3.value; _palette[3] = color4.value;
 
-            _palette[4] = color2a.value; _palette[5] = color2b.value;
-            _palette[6] = color2c.value; _palette[7] = color2d.value;
+            _palette[4] = color5.value; _palette[5] = color6.value;
+            _palette[6] = color7.value; _palette[7] = color8.value;
 
             cmd.SetComputeVectorArrayParam(_compute, IDs.Palette, _palette);
 
@@ -67,5 +80,7 @@ namespace Kino.PostProcessing.Eight
         public override void Cleanup()
         {
         }
+
+        #endregion
     }
 }

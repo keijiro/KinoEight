@@ -1,4 +1,8 @@
-Shader "Hidden/Kino/PostProcess/EightColor"
+//
+// Vertex/Fragment shader pair for the Eight Color effect
+//
+
+Shader "Hidden/Kino/PostProcess/Eight/EightColor"
 {
     HLSLINCLUDE
 
@@ -31,8 +35,7 @@ Shader "Hidden/Kino/PostProcess/EightColor"
 
     static const float bayer2x2[] = {-0.5, 0.16666666, 0.5, -0.16666666};
 
-    float3 _Color1, _Color2, _Color3, _Color4;
-    float3 _Color5, _Color6, _Color7, _Color8;
+    float4 _Palette[8];
     float _Dithering;
     float _Opacity;
 
@@ -42,51 +45,54 @@ Shader "Hidden/Kino/PostProcess/EightColor"
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-        uint2 positionSS = input.texcoord * _ScreenSize.xy;
-        float4 c = LOAD_TEXTURE2D_X(_InputTexture, positionSS);
+        // Input sample
+        const uint2 pss = input.texcoord * _ScreenSize.xy;
+        float4 col = LOAD_TEXTURE2D_X(_InputTexture, pss);
 
-        c.rgb = LinearToSRGB(c.rgb);
+        // Linear -> sRGB
+        col.rgb = LinearToSRGB(col.rgb);
 
-        float dither = bayer2x2[(positionSS.y & 1) * 2 + (positionSS.x & 1)];
-        c.rgb += dither * _Dithering;
+        // Dithering (2x2 bayer)
+        const float dither = bayer2x2[(pss.y & 1) * 2 + (pss.x & 1)];
+        col.rgb += dither * _Dithering;
 
-        float4 rgb_d, temp;
+        // Alias for each color
+        const float3 c1 = _Palette[0].rgb;
+        const float3 c2 = _Palette[1].rgb;
+        const float3 c3 = _Palette[2].rgb;
+        const float3 c4 = _Palette[3].rgb;
+        const float3 c5 = _Palette[4].rgb;
+        const float3 c6 = _Palette[5].rgb;
+        const float3 c7 = _Palette[6].rgb;
+        const float3 c8 = _Palette[7].rgb;
 
-        // Color 1
-        rgb_d = float4(_Color1, distance(_Color1, c.rgb));
+        // Euclidean distance
+        const float d1 = distance(c1, col.rgb);
+        const float d2 = distance(c2, col.rgb);
+        const float d3 = distance(c3, col.rgb);
+        const float d4 = distance(c4, col.rgb);
+        const float d5 = distance(c5, col.rgb);
+        const float d6 = distance(c6, col.rgb);
+        const float d7 = distance(c7, col.rgb);
+        const float d8 = distance(c8, col.rgb);
 
-        // Color 2
-        temp = float4(_Color2, distance(_Color2, c.rgb));
-        rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
-
-        // Color 3
-        temp = float4(_Color3, distance(_Color3, c.rgb));
-        rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
-
-        // Color 4
-        temp = float4(_Color4, distance(_Color4, c.rgb));
-        rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
-
-        // Color 5
-        temp = float4(_Color5, distance(_Color5, c.rgb));
-        rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
-
-        // Color 6
-        temp = float4(_Color6, distance(_Color6, c.rgb));
-        rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
-
-        // Color 7
-        temp = float4(_Color7, distance(_Color7, c.rgb));
-        rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
-
-        // Color 8
-        temp = float4(_Color8, distance(_Color8, c.rgb));
-        rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
+        // Best fit search
+        float4 rgb_d = float4(c1, d1);
+        rgb_d = rgb_d.a < d2 ? rgb_d : float4(c2, d2);
+        rgb_d = rgb_d.a < d3 ? rgb_d : float4(c3, d3);
+        rgb_d = rgb_d.a < d4 ? rgb_d : float4(c4, d4);
+        rgb_d = rgb_d.a < d5 ? rgb_d : float4(c5, d5);
+        rgb_d = rgb_d.a < d6 ? rgb_d : float4(c6, d6);
+        rgb_d = rgb_d.a < d7 ? rgb_d : float4(c7, d7);
+        rgb_d = rgb_d.a < d8 ? rgb_d : float4(c8, d8);
 
         // Opacity
-        c.rgb = lerp(c.rgb, rgb_d.rgb, _Opacity);
+        col.rgb = lerp(col.rgb, rgb_d.rgb, _Opacity);
 
-        return float4(SRGBToLinear(c.rgb), c.a);
+        // sRGB -> Linear
+        col.rgb = SRGBToLinear(col.rgb);
+
+        return col;
     }
 
     ENDHLSL
