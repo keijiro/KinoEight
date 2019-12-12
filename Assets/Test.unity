@@ -784,7 +784,7 @@ GameObject:
   - component: {fileID: 1970229899}
   - component: {fileID: 1970229898}
   m_Layer: 0
-  m_Name: Four Color
+  m_Name: Eight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -24,6 +24,7 @@ namespace Kino.PostProcessing.Eight
         public ColorParameter color8 = new ColorParameter(new Color(1, 1, 1, 0), false, true, true);
 
         public ClampedFloatParameter dithering = new ClampedFloatParameter(0.05f, 0, 0.5f);
+        public ClampedFloatParameter glitch = new ClampedFloatParameter(0, 0, 1);
         public ClampedFloatParameter opacity = new ClampedFloatParameter(0, 0, 1);
 
         #endregion
@@ -33,6 +34,7 @@ namespace Kino.PostProcessing.Eight
         static class IDs
         {
             internal static readonly int Dithering = Shader.PropertyToID("_Dithering");
+            internal static readonly int Glitch = Shader.PropertyToID("_Glitch");
             internal static readonly int InputTexture = Shader.PropertyToID("_InputTexture");
             internal static readonly int Opacity = Shader.PropertyToID("_Opacity");
             internal static readonly int OutputTexture = Shader.PropertyToID("_OutputTexture");
@@ -67,6 +69,7 @@ namespace Kino.PostProcessing.Eight
             cmd.SetComputeVectorArrayParam(_compute, IDs.Palette, _palette);
 
             cmd.SetComputeFloatParam(_compute, IDs.Dithering, dithering.value);
+            cmd.SetComputeFloatParam(_compute, IDs.Glitch, glitch.value);
             cmd.SetComputeFloatParam(_compute, IDs.Opacity, opacity.value);
 
             cmd.SetComputeTextureParam(_compute, 0, IDs.InputTexture, srcRT);

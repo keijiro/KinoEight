@@ -14,7 +14,7 @@ RW_TEXTURE2D_X(float4, _OutputTexture);
 
 CBUFFER_START(cb)
     float4 _Palette[8];
-    float _Dithering, _Opacity;
+    float _Dithering, _Glitch, _Opacity;
 CBUFFER_END
 
 // Compile time constants
@@ -47,10 +47,22 @@ float4 ApplyPalette(float3 rgb, uint idx)
 
 // Compute shader main kernel
 [numthreads(8, 8, 1)]
-void Main(uint3 gtID : SV_GroupThreadID, uint3 dtID : SV_DispatchThreadID)
+void Main(
+    uint3 gpID : SV_GroupID,
+    uint3 gtID : SV_GroupThreadID,
+    uint3 dtID : SV_DispatchThreadID
+)
 {
+    // Random numbers for glitch effect
+    const uint seed = (gpID.y * 4096 + gpID.x) ^ JenkinsHash(_Time.y * 10);
+    const uint rand = JenkinsHash(seed * 2) * (Hash(seed * 2 + 1) < _Glitch);
+
+    // Texture coordinates with glitch effect
+    const uint2 disp = uint2(rand, rand >> 16) * 8;
+    const uint2 sspos = (dtID.xy + disp) % (uint2)_ScreenParams.xy;
+
     // Input sample
-    float4 col = LOAD_TEXTURE2D_X(_InputTexture, dtID.xy);
+    float4 col = LOAD_TEXTURE2D_X(_InputTexture, sspos);
 
     // Linear -> sRGB
     col.rgb = LinearToSRGB(col.rgb);
@@ -79,7 +91,8 @@ void Main(uint3 gtID : SV_GroupThreadID, uint3 dtID : SV_DispatchThreadID)
     GroupMemoryBarrierWithGroupSync(); 
 
     // Palette selection and opacity
-    col.rgb = lerp(col.rgb, select1 ? c1.rgb : c2.rgb, _Opacity);
+    const bool flip = rand & 0x80000000u;
+    col.rgb = lerp(col.rgb, (select1 ^ flip) ? c1.rgb : c2.rgb, _Opacity);
 
     // sRGB -> Linear
     col.rgb = SRGBToLinear(col.rgb);

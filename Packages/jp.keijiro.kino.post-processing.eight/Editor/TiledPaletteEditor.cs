@@ -27,6 +27,7 @@ namespace Kino.PostProcessing.Eight
         SerializedDataParameter _color8;
 
         SerializedDataParameter _dithering;
+        SerializedDataParameter _glitch;
         SerializedDataParameter _opacity;
 
         public override void OnEnable()
@@ -44,6 +45,7 @@ namespace Kino.PostProcessing.Eight
             _color8 = Unpack(o.Find(x => x.color8));
 
             _dithering = Unpack(o.Find(x => x.dithering));
+            _glitch = Unpack(o.Find(x => x.glitch));
             _opacity = Unpack(o.Find(x => x.opacity));
         }
 
@@ -63,6 +65,7 @@ namespace Kino.PostProcessing.Eight
 
             EditorGUILayout.Space();
             PropertyField(_dithering);
+            PropertyField(_glitch);
             PropertyField(_opacity);
         }
     }
