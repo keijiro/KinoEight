@@ -260,43 +260,43 @@ MonoBehaviour:
   m_AdvancedMode: 0
   color1a:
     m_OverrideState: 1
-    m_Value: {r: 1, g: 1, b: 1, a: 0}
+    m_Value: {r: 0.031250477, g: 0.031250477, b: 0.031250477, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
   color1b:
     m_OverrideState: 1
-    m_Value: {r: 0.007843138, g: 0.007843138, b: 0.007843138, a: 0}
+    m_Value: {r: 0.2589151, g: 0.78065157, b: 0, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
   color1c:
     m_OverrideState: 1
-    m_Value: {r: 0, g: 0.43137258, b: 0.5176471, a: 0}
+    m_Value: {r: 0.7098192, g: 0.2427863, b: 1, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
   color1d:
     m_OverrideState: 1
-    m_Value: {r: 0, g: 0.20392159, b: 0.1254902, a: 0}
+    m_Value: {r: 1, g: 1, b: 1, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
   color2a:
     m_OverrideState: 1
-    m_Value: {r: 0, g: 0.34509805, b: 0.8705883, a: 0}
+    m_Value: {r: 0, g: 0, b: 0, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
   color2b:
     m_OverrideState: 1
-    m_Value: {r: 0.75294125, g: 0.023529414, b: 0.36078432, a: 0}
+    m_Value: {r: 0.9062028, g: 0.38054475, b: 0.09378195, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
   color2c:
     m_OverrideState: 1
-    m_Value: {r: 0.9725491, g: 0.5137255, b: 0.427451, a: 0}
+    m_Value: {r: 0.06251621, g: 0.6668193, b: 0.9062028, a: 0}
     hdr: 0
     showAlpha: 1
     showEyeDropper: 1
@@ -308,7 +308,7 @@ MonoBehaviour:
     showEyeDropper: 1
   dithering:
     m_OverrideState: 1
-    m_Value: 0.065
+    m_Value: 0.204
     min: 0
     max: 0.5
   opacity:

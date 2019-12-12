@@ -22,18 +22,11 @@ namespace Kino.PostProcessing.Eight
 
         static class IDs
         {
-            internal static readonly int Color1a = Shader.PropertyToID("_Color1a");
-            internal static readonly int Color1b = Shader.PropertyToID("_Color1b");
-            internal static readonly int Color1c = Shader.PropertyToID("_Color1c");
-            internal static readonly int Color1d = Shader.PropertyToID("_Color1d");
-            internal static readonly int Color2a = Shader.PropertyToID("_Color2a");
-            internal static readonly int Color2b = Shader.PropertyToID("_Color2b");
-            internal static readonly int Color2c = Shader.PropertyToID("_Color2c");
-            internal static readonly int Color2d = Shader.PropertyToID("_Color2d");
             internal static readonly int Dithering = Shader.PropertyToID("_Dithering");
             internal static readonly int InputTexture = Shader.PropertyToID("_InputTexture");
             internal static readonly int Opacity = Shader.PropertyToID("_Opacity");
             internal static readonly int OutputTexture = Shader.PropertyToID("_OutputTexture");
+            internal static readonly int Palette = Shader.PropertyToID("_Palette");
         }
 
         public bool IsActive() => opacity.value > 0;
@@ -42,6 +35,7 @@ namespace Kino.PostProcessing.Eight
             CustomPostProcessInjectionPoint.AfterPostProcess;
 
         static ComputeShader _compute;
+        static Vector4 [] _palette = new Vector4 [8];
 
         public override void Setup()
         {
@@ -51,25 +45,22 @@ namespace Kino.PostProcessing.Eight
 
         public override void Render(CommandBuffer cmd, HDCamera camera, RTHandle srcRT, RTHandle destRT)
         {
-            var bx = (camera.actualWidth  + 7) / 8;
-            var by = (camera.actualHeight + 7) / 8;
+            _palette[0] = color1a.value; _palette[1] = color1b.value;
+            _palette[2] = color1c.value; _palette[3] = color1d.value;
+
+            _palette[4] = color2a.value; _palette[5] = color2b.value;
+            _palette[6] = color2c.value; _palette[7] = color2d.value;
+
+            cmd.SetComputeVectorArrayParam(_compute, IDs.Palette, _palette);
 
             cmd.SetComputeFloatParam(_compute, IDs.Dithering, dithering.value);
             cmd.SetComputeFloatParam(_compute, IDs.Opacity, opacity.value);
 
-            cmd.SetComputeVectorParam(_compute, IDs.Color1a, color1a.value);
-            cmd.SetComputeVectorParam(_compute, IDs.Color1b, color1b.value);
-            cmd.SetComputeVectorParam(_compute, IDs.Color1c, color1c.value);
-            cmd.SetComputeVectorParam(_compute, IDs.Color1d, color1d.value);
-
-            cmd.SetComputeVectorParam(_compute, IDs.Color2a, color2a.value);
-            cmd.SetComputeVectorParam(_compute, IDs.Color2b, color2b.value);
-            cmd.SetComputeVectorParam(_compute, IDs.Color2c, color2c.value);
-            cmd.SetComputeVectorParam(_compute, IDs.Color2d, color2d.value);
-
             cmd.SetComputeTextureParam(_compute, 0, IDs.InputTexture, srcRT);
             cmd.SetComputeTextureParam(_compute, 0, IDs.OutputTexture, destRT);
 
+            var bx = (camera.actualWidth  + 7) / 8;
+            var by = (camera.actualHeight + 7) / 8;
             cmd.DispatchCompute(_compute, 0, bx, by, 1);
         }
 

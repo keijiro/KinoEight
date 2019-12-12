@@ -4,79 +4,82 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
 
+// Compute shader properties
 TEXTURE2D_X(_InputTexture);
 RW_TEXTURE2D_X(float4, _OutputTexture);
 
-float3 _Color1a, _Color1b, _Color1c, _Color1d;
-float3 _Color2a, _Color2b, _Color2c, _Color2d;
-float _Dithering, _Opacity;
+CBUFFER_START(cb)
+    float4 _Palette[8];
+    float _Dithering, _Opacity;
+CBUFFER_END
 
-float4 ApplyPalette(float3 rgb, float3 c1, float3 c2, float3 c3, float3 c4)
+// Compile time constants
+static const float bayer2x2[] = {-0.5, 0.16666666, 0.5, -0.16666666};
+
+// Thread group shared variables
+groupshared float2 dists[64];
+groupshared bool select1;
+
+// Apply a four color palette.
+float4 ApplyPalette(float3 rgb, uint idx)
 {
-    float4 rgb_d, temp;
+    const float3 c1 = _Palette[idx + 0].rgb;
+    const float3 c2 = _Palette[idx + 1].rgb;
+    const float3 c3 = _Palette[idx + 2].rgb;
+    const float3 c4 = _Palette[idx + 3].rgb;
 
-    // Color 1
-    rgb_d = float4(c1, distance(c1, rgb));
+    const float d1 = distance(c1, rgb);
+    const float d2 = distance(c2, rgb);
+    const float d3 = distance(c3, rgb);
+    const float d4 = distance(c4, rgb);
 
-    // Color 2
-    temp = float4(c2, distance(c2, rgb));
-    rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
-
-    // Color 3
-    temp = float4(c3, distance(c3, rgb));
-    rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
-
-    // Color 4
-    temp = float4(c4, distance(c4, rgb));
-    rgb_d = lerp(rgb_d, temp, rgb_d.a > temp.a);
+    float4 rgb_d = float4(c1, d1);
+    rgb_d = rgb_d.a < d2 ? rgb_d : float4(c2, d2);
+    rgb_d = rgb_d.a < d3 ? rgb_d : float4(c3, d3);
+    rgb_d = rgb_d.a < d4 ? rgb_d : float4(c4, d4);
 
     return rgb_d;
 }
 
-static const float bayer2x2[] = {-0.5, 0.16666666, 0.5, -0.16666666};
-
-groupshared float dmtx1[8][8];
-groupshared float dmtx2[8][8];
-
-groupshared bool use1;
-
+// Compute shader main kernel
 [numthreads(8, 8, 1)]
-void Main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 tid : SV_GroupThreadID)
+void Main(uint3 gtID : SV_GroupThreadID, uint3 dtID : SV_DispatchThreadID)
 {
-    float4 c = LOAD_TEXTURE2D_X(_InputTexture, dispatchThreadId.xy);
+    // Input sample
+    float4 col = LOAD_TEXTURE2D_X(_InputTexture, dtID.xy);
 
-    c.rgb = LinearToSRGB(c.rgb);
+    // Linear -> sRGB
+    col.rgb = LinearToSRGB(col.rgb);
 
-    float dither = bayer2x2[(tid.y & 1) * 2 + (tid.x & 1)];
-    c.rgb += dither * _Dithering;
+    // Dithering (2x2 bayer)
+    const float dither = bayer2x2[(gtID.y & 1) * 2 + (gtID.x & 1)];
+    col.rgb += dither * _Dithering;
 
-    float4 rgb_d1 = ApplyPalette(c.rgb, _Color1a, _Color1b, _Color1c, _Color1d);
-    float4 rgb_d2 = ApplyPalette(c.rgb, _Color2a, _Color2b, _Color2c, _Color2d);
+    // Apply palette 1 and 2.
+    const float4 c1 = ApplyPalette(col.rgb, 0);
+    const float4 c2 = ApplyPalette(col.rgb, 4);
 
-    dmtx1[tid.x][tid.y] = rgb_d1.a;
-    dmtx2[tid.x][tid.y] = rgb_d2.a;
+    // Put the distance values onto a shared array.
+    dists[gtID.y * 8 + gtID.x] = float2(c1.a, c2.a);
 
     GroupMemoryBarrierWithGroupSync(); 
 
-    if (tid.x == 0 && tid.y == 0)
+    // Thread #0: Accumulate and compare the distance values.
+    if (gtID.x == 0 && gtID.y == 0)
     {
-        float a1 = 0;
-        float a2 = 0;
-
-        for (uint y = 0; y < 8; y++)
-            for (uint x = 0; x < 8; x++)
-            {
-                a1 += dmtx1[x][y];
-                a2 += dmtx2[x][y];
-            }
-
-        use1 = a1 < a2;
+        float2 acc = 0;
+        for (uint i = 0; i < 64; i++) acc += dists[i];
+        select1 = acc.x < acc.y;
     }
 
     GroupMemoryBarrierWithGroupSync(); 
 
-    c.rgb = lerp(c.rgb, use1 ? rgb_d1.rgb : rgb_d2.rgb, _Opacity);
+    // Palette selection and opacity
+    col.rgb = lerp(col.rgb, select1 ? c1.rgb : c2.rgb, _Opacity);
 
-    _OutputTexture[COORD_TEXTURE2D_X(dispatchThreadId.xy)]
-        = float4(SRGBToLinear(c.rgb), c.a);
+    // sRGB -> Linear
+    col.rgb = SRGBToLinear(col.rgb);
+
+    // Output
+    _OutputTexture[COORD_TEXTURE2D_X(dtID.xy)] = col;
 }
