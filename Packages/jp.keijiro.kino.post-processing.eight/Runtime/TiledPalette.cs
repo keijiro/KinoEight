@@ -34,6 +34,7 @@ namespace Kino.PostProcessing.Eight
         static class IDs
         {
             internal static readonly int Dithering = Shader.PropertyToID("_Dithering");
+            internal static readonly int FontTexture = Shader.PropertyToID("_FontTexture");
             internal static readonly int Glitch = Shader.PropertyToID("_Glitch");
             internal static readonly int InputTexture = Shader.PropertyToID("_InputTexture");
             internal static readonly int LocalTime = Shader.PropertyToID("_LocalTime");
@@ -43,6 +44,7 @@ namespace Kino.PostProcessing.Eight
         }
 
         static ComputeShader _compute;
+        static Texture2D _font;
         static Vector4 [] _palette = new Vector4 [8];
 
         #endregion
@@ -59,6 +61,7 @@ namespace Kino.PostProcessing.Eight
         public override void Setup()
         {
             if (_compute == null) _compute = Resources.Load<ComputeShader>("KinoEightTiledPalette");
+            if (_font == null) _font = Resources.Load<Texture2D>("KinoEightFont");
         }
 
         public override void Render(CommandBuffer cmd, HDCamera camera, RTHandle srcRT, RTHandle destRT)
@@ -78,6 +81,7 @@ namespace Kino.PostProcessing.Eight
             cmd.SetComputeFloatParam(_compute, IDs.LocalTime, _time);
             cmd.SetComputeFloatParam(_compute, IDs.Opacity, opacity.value);
 
+            cmd.SetComputeTextureParam(_compute, 0, IDs.FontTexture, _font);
             cmd.SetComputeTextureParam(_compute, 0, IDs.InputTexture, srcRT);
             cmd.SetComputeTextureParam(_compute, 0, IDs.OutputTexture, destRT);
 
