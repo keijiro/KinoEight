@@ -36,6 +36,7 @@ namespace Kino.PostProcessing.Eight
             internal static readonly int Dithering = Shader.PropertyToID("_Dithering");
             internal static readonly int Glitch = Shader.PropertyToID("_Glitch");
             internal static readonly int InputTexture = Shader.PropertyToID("_InputTexture");
+            internal static readonly int LocalTime = Shader.PropertyToID("_LocalTime");
             internal static readonly int Opacity = Shader.PropertyToID("_Opacity");
             internal static readonly int OutputTexture = Shader.PropertyToID("_OutputTexture");
             internal static readonly int Palette = Shader.PropertyToID("_Palette");
@@ -47,6 +48,8 @@ namespace Kino.PostProcessing.Eight
         #endregion
 
         #region Postprocess effect implementation
+
+        float _time;
 
         public bool IsActive() => opacity.value > 0;
 
@@ -60,6 +63,8 @@ namespace Kino.PostProcessing.Eight
 
         public override void Render(CommandBuffer cmd, HDCamera camera, RTHandle srcRT, RTHandle destRT)
         {
+            _time += Time.deltaTime;
+
             _palette[0] = color1.value; _palette[1] = color2.value;
             _palette[2] = color3.value; _palette[3] = color4.value;
 
@@ -70,6 +75,7 @@ namespace Kino.PostProcessing.Eight
 
             cmd.SetComputeFloatParam(_compute, IDs.Dithering, dithering.value);
             cmd.SetComputeFloatParam(_compute, IDs.Glitch, glitch.value);
+            cmd.SetComputeFloatParam(_compute, IDs.LocalTime, _time);
             cmd.SetComputeFloatParam(_compute, IDs.Opacity, opacity.value);
 
             cmd.SetComputeTextureParam(_compute, 0, IDs.InputTexture, srcRT);
