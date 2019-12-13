@@ -52,13 +52,13 @@ uint IRand(uint seed)
     return (seed + 0x811c9dc5u) ^ 0x01000193u;
 }
 
-// Moderately low quality pseudo random number generator (float)
+// Low quality pseudo random number generator (float)
 float FRand(uint seed)
 {
     return ConstructFloat((seed * 0x811c9dc5u) ^ 0x01000193u);
 }
 
-// Compute shader main kernel
+// Main kernel function
 [numthreads(8, 8, 1)]
 void Main(
     uint3 gpID : SV_GroupID,
@@ -66,22 +66,23 @@ void Main(
     uint3 dtID : SV_DispatchThreadID
 )
 {
-    // Random numbers for glitch effect
+    // Random number for per-block glitch effect
     const uint seed_gp = gpID.y * 4096 + gpID.x;
     const uint seed_t = lerp(1, 10, FRand(seed_gp)) * _LocalTime;
     const uint seed = (seed_gp ^ IRand(seed_t)) * 2;
-    const uint rand = IRand(seed) * (FRand(seed + 1) < _Glitch);
+    const uint glitch = IRand(seed) * (FRand(seed + 1) < _Glitch);
 
-    // Input texture sample with glitch effect
-    const uint2 disp = uint2(rand & 0xffffu, (rand >> 16) & 0xffffu) * 8;
-    const uint2 ssp1 = (dtID.xy + disp) % (uint2)_ScreenParams.xy;
-    const float4 source = LOAD_TEXTURE2D_X(_InputTexture, ssp1);
+    // Input texture sample with glitch displacement
+    const uint2 disp = uint2(glitch & 0xffffu, (glitch >> 16) & 0xffffu) * 8;
+    const uint2 tc_src = (dtID.xy + disp) % (uint2)_ScreenParams.xy;
+    const float4 src = LOAD_TEXTURE2D_X(_InputTexture, tc_src);
 
     // Character pattern sample
-    const uint2 ssp2 = (dtID.xy & 7) + (uint2(seed >> 3, seed) & 7) * 8;
-    const float4 font = LOAD_TEXTURE2D(_FontTexture, ssp2).a;
+    const uint2 tc_font = (dtID.xy & 7) + (uint2(seed >> 3, seed) & 7) * 8;
+    const float4 font = LOAD_TEXTURE2D(_FontTexture, tc_font).a;
 
-    float4 col = (rand & 0xa000u) == 0xa000u ? font : source;
+    // Input color
+    float4 col = (glitch & 0xa000u) == 0xa000u ? font : src;
 
     // Linear -> sRGB
     col.rgb = LinearToSRGB(col.rgb);
@@ -110,7 +111,7 @@ void Main(
     GroupMemoryBarrierWithGroupSync(); 
 
     // Palette selection and opacity
-    const bool flip = rand & 0x1000u;
+    const bool flip = glitch & 0x1000u;
     col.rgb = lerp(col.rgb, (select1 ^ flip) ? c1.rgb : c2.rgb, _Opacity);
 
     // sRGB -> Linear
