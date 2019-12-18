@@ -15,6 +15,7 @@ RW_TEXTURE2D_X(float4, _OutputTexture);
 
 CBUFFER_START(cb)
     float4 _Palette[8];
+    uint _Downsampling;
     float _Dithering, _Glitch, _Opacity, _LocalTime;
 CBUFFER_END
 
@@ -74,8 +75,8 @@ void Main(
 
     // Input texture sample with glitch displacement
     const uint2 disp = uint2(glitch & 0xffffu, (glitch >> 16) & 0xffffu) * 8;
-    const uint2 tc_src = (dtID.xy + disp) % (uint2)_ScreenParams.xy;
-    const float4 src = LOAD_TEXTURE2D_X(_InputTexture, tc_src);
+    const uint2 tc_src = (dtID.xy + disp) % ((uint2)_ScreenParams.xy / _Downsampling);
+    const float4 src = LOAD_TEXTURE2D_X(_InputTexture, tc_src * _Downsampling);
 
     // Character pattern sample
     const uint2 tc_font = (dtID.xy & 7) + (uint2(seed >> 3, seed) & 7) * 8;
@@ -118,5 +119,12 @@ void Main(
     col.rgb = SRGBToLinear(col.rgb);
 
     // Output
-    _OutputTexture[COORD_TEXTURE2D_X(dtID.xy)] = col;
+    for (uint dy = 0; dy < _Downsampling; dy++)
+    {
+        for (uint dx = 0; dx < _Downsampling; dx++)
+        {
+            const uint2 dest = dtID.xy * _Downsampling + uint2(dx, dy);
+            _OutputTexture[COORD_TEXTURE2D_X(dest)] = col;
+        }
+    }
 }

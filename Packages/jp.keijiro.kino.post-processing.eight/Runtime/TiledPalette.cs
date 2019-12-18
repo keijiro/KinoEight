@@ -24,6 +24,7 @@ namespace Kino.PostProcessing.Eight
         public ColorParameter color8 = new ColorParameter(new Color(1, 1, 1, 0), false, true, true);
 
         public ClampedFloatParameter dithering = new ClampedFloatParameter(0.05f, 0, 0.5f);
+        public ClampedIntParameter downsampling = new ClampedIntParameter(1, 1, 32);
         public ClampedFloatParameter glitch = new ClampedFloatParameter(0, 0, 1);
         public ClampedFloatParameter opacity = new ClampedFloatParameter(0, 0, 1);
 
@@ -34,6 +35,7 @@ namespace Kino.PostProcessing.Eight
         static class IDs
         {
             internal static readonly int Dithering = Shader.PropertyToID("_Dithering");
+            internal static readonly int Downsampling = Shader.PropertyToID("_Downsampling");
             internal static readonly int FontTexture = Shader.PropertyToID("_FontTexture");
             internal static readonly int Glitch = Shader.PropertyToID("_Glitch");
             internal static readonly int InputTexture = Shader.PropertyToID("_InputTexture");
@@ -77,6 +79,7 @@ namespace Kino.PostProcessing.Eight
             cmd.SetComputeVectorArrayParam(_compute, IDs.Palette, _palette);
 
             cmd.SetComputeFloatParam(_compute, IDs.Dithering, dithering.value);
+            cmd.SetComputeIntParam(_compute, IDs.Downsampling, downsampling.value);
             cmd.SetComputeFloatParam(_compute, IDs.Glitch, glitch.value);
             cmd.SetComputeFloatParam(_compute, IDs.LocalTime, _time);
             cmd.SetComputeFloatParam(_compute, IDs.Opacity, opacity.value);
@@ -85,8 +88,9 @@ namespace Kino.PostProcessing.Eight
             cmd.SetComputeTextureParam(_compute, 0, IDs.InputTexture, srcRT);
             cmd.SetComputeTextureParam(_compute, 0, IDs.OutputTexture, destRT);
 
-            var bx = (camera.actualWidth  + 7) / 8;
-            var by = (camera.actualHeight + 7) / 8;
+            var stride = downsampling.value * 8;
+            var bx = (camera.actualWidth  + stride - 1) / stride;
+            var by = (camera.actualHeight + stride - 1) / stride;
             cmd.DispatchCompute(_compute, 0, bx, by, 1);
         }
 
