@@ -37,6 +37,7 @@ Shader "Hidden/Kino/PostProcess/Eight/EightColor"
 
     float4 _Palette[8];
     float _Dithering;
+    uint _Downsampling;
     float _Opacity;
 
     TEXTURE2D_X(_InputTexture);
@@ -46,8 +47,8 @@ Shader "Hidden/Kino/PostProcess/Eight/EightColor"
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
         // Input sample
-        const uint2 pss = input.texcoord * _ScreenSize.xy;
-        float4 col = LOAD_TEXTURE2D_X(_InputTexture, pss);
+        const uint2 pss = (uint2)(input.texcoord * _ScreenSize.xy) / _Downsampling;
+        float4 col = LOAD_TEXTURE2D_X(_InputTexture, pss * _Downsampling);
 
         // Linear -> sRGB
         col.rgb = LinearToSRGB(col.rgb);

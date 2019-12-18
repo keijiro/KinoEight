@@ -24,6 +24,7 @@ namespace Kino.PostProcessing.Eight
         public ColorParameter color8 = new ColorParameter(new Color(1, 1, 1, 0), false, true, true);
 
         public ClampedFloatParameter dithering = new ClampedFloatParameter(0.05f, 0, 0.5f);
+        public ClampedIntParameter downsampling = new ClampedIntParameter(1, 1, 32);
         public ClampedFloatParameter opacity = new ClampedFloatParameter(0, 0, 1);
 
         #endregion
@@ -33,6 +34,7 @@ namespace Kino.PostProcessing.Eight
         static class IDs
         {
             internal static readonly int Dithering = Shader.PropertyToID("_Dithering");
+            internal static readonly int Downsampling = Shader.PropertyToID("_Downsampling");
             internal static readonly int InputTexture = Shader.PropertyToID("_InputTexture");
             internal static readonly int Opacity = Shader.PropertyToID("_Opacity");
             internal static readonly int Palette = Shader.PropertyToID("_Palette");
@@ -69,6 +71,7 @@ namespace Kino.PostProcessing.Eight
             _material.SetVectorArray(IDs.Palette, _palette);
 
             _material.SetFloat(IDs.Dithering, dithering.value);
+            _material.SetInt(IDs.Downsampling, downsampling.value);
             _material.SetFloat(IDs.Opacity, opacity.value);
 
             _material.SetTexture(IDs.InputTexture, srcRT);
