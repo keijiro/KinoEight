@@ -5,7 +5,7 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace Kino.PostProcessing.Eight
 {
-    [VolumeComponentEditor(typeof(TiledPalette))]
+    [CustomEditor(typeof(TiledPalette))]
     public sealed class TiledPaletteEditor : VolumeComponentEditor
     {
         static class Labels
