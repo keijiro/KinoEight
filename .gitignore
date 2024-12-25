@@ -3,8 +3,8 @@ Desktop.ini
 .DS_Store
 *.swp
 
-/Library
-/Logs
-/Recordings
-/Temp
-/UserSettings
+/HDRP/Library
+/HDRP/Logs
+/HDRP/Recordings
+/HDRP/Temp
+/HDRP/UserSettings
