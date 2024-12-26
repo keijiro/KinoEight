@@ -1,13 +1,13 @@
+// 2x2 Bayer matrix for dithering
 static const float bayer2x2[] = {-0.5, 0.16666666, 0.5, -0.16666666};
 
-void EightColorCore_float
-  (float4 Source,
-   float2 RawUV,
-   float4x4 Palette1,
-   float4x4 Palette2,
-   float Dither,
-   float Downsample,
-   out float4 Output)
+void EightColorCore_float(float4 Source,
+                          float2 RawUV,
+                          float4x4 Palette1,
+                          float4x4 Palette2,
+                          float Dither,
+                          float Downsample,
+                          out float4 Output)
 {
     // Linear -> sRGB
     float3 col = LinearToSRGB(Source.rgb);

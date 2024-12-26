@@ -36,7 +36,7 @@ public sealed partial class EightColorController : MonoBehaviour
 
     #endregion
 
-    #region Private variables
+    #region Private members
 
     static class IDs
     {

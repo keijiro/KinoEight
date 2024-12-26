@@ -1,0 +1,128 @@
+#pragma kernel Main
+
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+
+TEXTURE2D(_KinoEightFontTexture);
+
+TEXTURE2D(InputTexture);
+RW_TEXTURE2D(float4, OutputTexture);
+
+CBUFFER_START(cb)
+    float4x4 Palette1, Palette2;
+    float Dithering, Glitch, LocalTime, Opacity;
+    uint Downsampling;
+CBUFFER_END
+
+// 2x2 Bayer matrix for dithering
+static const float bayer2x2[] = {-0.5, 0.16666666, 0.5, -0.16666666};
+
+// Thread group shared variables
+groupshared float2 dists[64];
+groupshared bool select1;
+
+// Best fit search from palette
+float4 ApplyPalette(float3 rgb, bool alt)
+{
+    const float3 c1 = (alt ? Palette2[0] : Palette1[0]).rgb;
+    const float3 c2 = (alt ? Palette2[1] : Palette1[1]).rgb;
+    const float3 c3 = (alt ? Palette2[2] : Palette1[2]).rgb;
+    const float3 c4 = (alt ? Palette2[3] : Palette1[3]).rgb;
+
+    const float d1 = distance(c1, rgb);
+    const float d2 = distance(c2, rgb);
+    const float d3 = distance(c3, rgb);
+    const float d4 = distance(c4, rgb);
+
+    float4 rgb_d = float4(c1, d1);
+    rgb_d = rgb_d.a < d2 ? rgb_d : float4(c2, d2);
+    rgb_d = rgb_d.a < d3 ? rgb_d : float4(c3, d3);
+    rgb_d = rgb_d.a < d4 ? rgb_d : float4(c4, d4);
+
+    return rgb_d;
+}
+
+// Low quality pseudo random number generator (uint)
+uint IRand(uint seed)
+{
+    return (seed + 0x811c9dc5u) ^ 0x01000193u;
+}
+
+// Low quality pseudo random number generator (float)
+float FRand(uint seed)
+{
+    return ConstructFloat((seed * 0x811c9dc5u) ^ 0x01000193u);
+}
+
+// Main kernel function
+[numthreads(8, 8, 1)]
+void Main(uint2 gpID : SV_GroupID,
+          uint2 gtID : SV_GroupThreadID,
+          uint2 dtID : SV_DispatchThreadID)
+{
+    // Texture dimensions
+    uint width, height;
+    InputTexture.GetDimensions(width, height);
+
+    // Random number for per-block glitch effect
+    const uint seed_gp = gpID.y * 4096 + gpID.x;
+    const uint seed_t = lerp(1, 10, FRand(seed_gp)) * LocalTime;
+    const uint seed = (seed_gp ^ IRand(seed_t)) * 2;
+    const uint glitch = IRand(seed) * (FRand(seed + 1) < Glitch);
+
+    // Input texture sample with glitch displacement
+    const uint2 disp = uint2(glitch & 0xffffu, (glitch >> 16) & 0xffffu) * 8;
+    const uint2 tc_src = (dtID + disp) % (uint2(width, height) / Downsampling);
+    const uint2 tc_src_safe = min(tc_src * Downsampling, uint2(width, height) - 1);
+    const float4 src = LOAD_TEXTURE2D(InputTexture, tc_src_safe);
+
+    // Character pattern sample
+    const uint2 tc_font = (dtID & 7) + (uint2(seed >> 3, seed) & 7) * 8;
+    const float4 font = LOAD_TEXTURE2D(_KinoEightFontTexture, tc_font).a;
+
+    // Input color
+    float4 col = (glitch & 0xa000u) == 0xa000u ? font : src;
+
+    // Linear -> sRGB
+    col.rgb = LinearToSRGB(col.rgb);
+
+    // Dithering (2x2 bayer)
+    const float dither = bayer2x2[(gtID.y & 1) * 2 + (gtID.x & 1)];
+    col.rgb += dither * Dithering;
+
+    // Apply palette 1 and 2.
+    const float4 c1 = ApplyPalette(col.rgb, 0);
+    const float4 c2 = ApplyPalette(col.rgb, 4);
+
+    // Put the distance values onto a shared array.
+    dists[gtID.y * 8 + gtID.x] = float2(c1.a, c2.a);
+
+    GroupMemoryBarrierWithGroupSync(); 
+
+    // Thread #0: Accumulate and compare the distance values.
+    if (gtID.x == 0 && gtID.y == 0)
+    {
+        float2 acc = 0;
+        for (uint i = 0; i < 64; i++) acc += dists[i];
+        select1 = acc.x < acc.y;
+    }
+
+    GroupMemoryBarrierWithGroupSync(); 
+
+    // Palette selection and opacity
+    const bool flip = glitch & 0x1000u;
+    col.rgb = lerp(col.rgb, (select1 ^ flip) ? c1.rgb : c2.rgb, Opacity);
+
+    // sRGB -> Linear
+    col.rgb = SRGBToLinear(col.rgb);
+
+    // Output
+    for (uint dy = 0; dy < Downsampling; dy++)
+    {
+        for (uint dx = 0; dx < Downsampling; dx++)
+        {
+            const uint2 dest = dtID * Downsampling + uint2(dx, dy);
+            if (all(dest < uint2(width, height))) OutputTexture[dest] = col;
+        }
+    }
+}

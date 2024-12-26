@@ -41,7 +41,8 @@ MonoBehaviour:
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
   - {fileID: -5798339535827745010}
-  m_RendererFeatureMap: 0e47e2bfe92888af
+  - {fileID: 7029652327428906641}
+  m_RendererFeatureMap: 0e47e2bfe92888af91dee50e8c578e61
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   m_AssetVersion: 2
@@ -66,3 +67,16 @@ MonoBehaviour:
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 1
+--- !u!114 &7029652327428906641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82826bb1e949e427093af033947412b7, type: 3}
+  m_Name: TiledPaletteFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
